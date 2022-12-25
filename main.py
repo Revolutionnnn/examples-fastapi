@@ -1,9 +1,9 @@
 # Python
-from typing import Optional
+from typing import Optional, Dict, Any
 from enum import Enum
 
 # Pydantic
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, IPvAnyAddress, HttpUrl, EmailStr
 
 # FastAPO
 from fastapi import FastAPI
@@ -23,9 +23,27 @@ class HairColor(str, Enum):
 
 
 class Location(BaseModel):
-    city: str
-    state: str
-    country: str
+    city: str = Field(
+        min_length=0,
+        max_length=20
+    )
+    state: str = Field(
+        min_length=0,
+        max_length=20
+    )
+    country: str = Field(
+        min_length=0,
+        max_length=20
+    )
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "city": "Buenos aires",
+                "state": "Provincia",
+                "country": "Argentina"
+            }
+        }
 
 
 class Person(BaseModel):
@@ -43,6 +61,24 @@ class Person(BaseModel):
     )
     hair_color: Optional[HairColor] = None
     is_married: Optional[bool] = Field(default=None)
+
+    email: EmailStr = Field()
+    addressIp: Optional[IPvAnyAddress] = Field()
+    website_url: Optional[HttpUrl] = Field()
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "first_name": "Rodrigo",
+                "last_name": "Lopez",
+                "age": 30,
+                "hair_color": "black",
+                "is_married": False,
+                "email": "maicol@gmail.com",
+                "addressIp": "127.0.0.1",
+                "website_url": "https://www.live.com"
+            }
+        }
 
 
 @app.get("/")  # path operation decorator
