@@ -1,8 +1,9 @@
 # Python
 from typing import Optional
+from enum import Enum
 
 # Pydantic
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 # FastAPO
 from fastapi import FastAPI
@@ -13,17 +14,35 @@ app = FastAPI()
 
 #  Models
 
+class HairColor(str, Enum):
+    white = "white"
+    brown = "brown"
+    black = "black"
+    blonde = "blonde"
+    red = "red"
+
+
 class Location(BaseModel):
     city: str
     state: str
     country: str
 
+
 class Person(BaseModel):
-    first_name: str
-    last_name: str
-    age: int
-    hair_color: Optional[str] = None
-    is_married: Optional[bool] = None
+    first_name: str = Field(
+        min_length=1,
+        max_length=50
+    )
+    last_name: str = Field(
+        min_length=1,
+        max_length=50
+    )
+    age: int = Field(
+        gt=0,
+        le=150
+    )
+    hair_color: Optional[HairColor] = None
+    is_married: Optional[bool] = Field(default=None)
 
 
 @app.get("/")  # path operation decorator
@@ -36,6 +55,7 @@ def home():  # path operation function
 @app.post("/person/new")
 def create_person(person: Person = Body()):
     return person
+
 
 #  Validaciones: Querry parameters
 
