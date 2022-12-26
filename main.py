@@ -65,6 +65,9 @@ class Person(BaseModel):
     email: EmailStr = Field()
     addressIp: Optional[IPvAnyAddress] = Field()
     website_url: Optional[HttpUrl] = Field()
+    password: str = Field(
+        min_length=8,
+    )
 
     class Config:
         schema_extra = {
@@ -76,7 +79,8 @@ class Person(BaseModel):
                 "is_married": False,
                 "email": "maicol@gmail.com",
                 "addressIp": "127.0.0.1",
-                "website_url": "https://www.live.com"
+                "website_url": "https://www.live.com",
+                "password": "@12asasdas12."
             }
         }
 
@@ -88,7 +92,7 @@ def home():  # path operation function
 
 #  Request and Response body
 
-@app.post("/person/new")
+@app.post("/person/new", response_model=Person, response_model_exclude={'password'})
 def create_person(person: Person = Body()):
     return person
 
