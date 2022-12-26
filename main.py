@@ -5,6 +5,7 @@ from typing import Optional
 # FastAPO
 from fastapi import Body, Query, Path
 from fastapi import FastAPI
+from fastapi import status
 
 # Pydantic
 from pydantic import BaseModel, Field, IPvAnyAddress, HttpUrl, EmailStr
@@ -85,21 +86,31 @@ class Person(BaseModel):
         }
 
 
-@app.get("/")  # path operation decorator
+@app.get(
+    path="/",
+    status_code=status.HTTP_200_OK
+    )  # path operation decorator
 def home():  # path operation function
     return {"hello": "World"}  # JSON
 
 
 #  Request and Response body
 
-@app.post("/person/new", response_model=Person, response_model_exclude={'password'})
+@app.post(
+            path="/person/new",
+          response_model=Person,
+          response_model_exclude={"password"},
+          status_code=status.HTTP_201_CREATED
+          )
 def create_person(person: Person = Body()):
     return person
 
 
 #  Validaciones: Querry parameters
 
-@app.get("/person/detail")
+@app.get(
+    path="/person/detail",
+    status_code=status.HTTP_200_OK)
 def show_person(
         name: Optional[str] = Query(
             None,
@@ -120,7 +131,9 @@ def show_person(
 
 #  Validaciones: Path Parameters
 
-@app.get("/person/detail/{person_id}")
+@app.get(
+    path="/person/detail/{person_id}",
+    status_code=status.HTTP_200_OK)
 def show_person(
         person_id: int = Path(
             gt=0,
@@ -132,7 +145,9 @@ def show_person(
 
 #  Validaciones: Request Body
 
-@app.put("/person/{person_id}")
+@app.put(
+    path="/person/{person_id}",
+    status_code=status.HTTP_200_OK)
 def update_person(
         person_id: int = Path(
             title="Person ID",
