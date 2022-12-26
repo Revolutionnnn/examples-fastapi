@@ -1,13 +1,13 @@
 # Python
-from typing import Optional, Dict, Any
 from enum import Enum
+from typing import Optional
+
+# FastAPO
+from fastapi import Body, Query, Path
+from fastapi import FastAPI
 
 # Pydantic
 from pydantic import BaseModel, Field, IPvAnyAddress, HttpUrl, EmailStr
-
-# FastAPO
-from fastapi import FastAPI
-from fastapi import Body, Query, Path
 
 app = FastAPI()
 
@@ -102,11 +102,13 @@ def show_person(
             min_length=1,
             max_length=50,
             title="Person name",
-            description="This is the person name. It' s between 1 and 50 characters"
+            description="This is the person name. It' s between 1 and 50 characters",
+            example="Rocio"
         ),
         age: Optional[str] = Query(
             title="Person Age",
-            description="This is the person age. It's required"
+            description="This is the person age. It's required",
+            example=25
         )
 ):
     return {name: age}
@@ -116,7 +118,10 @@ def show_person(
 
 @app.get("/person/detail/{person_id}")
 def show_person(
-        person_id: int = Path(gt=0)
+        person_id: int = Path(
+            gt=0,
+            example=123
+        )
 ):
     return {person_id: "it exists!"}
 
@@ -128,7 +133,8 @@ def update_person(
         person_id: int = Path(
             title="Person ID",
             description="This is the person ID",
-            gt=0
+            gt=0,
+            example=123
         ),
         person: Person = Body(),
         location: Location = Body()
