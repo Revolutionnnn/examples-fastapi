@@ -3,7 +3,7 @@ from enum import Enum
 from typing import Optional
 
 # FastAPO
-from fastapi import Body, Query, Path, Form, Header, Cookie
+from fastapi import Body, Query, Path, Form, Header, Cookie, UploadFile, File
 from fastapi import FastAPI
 from fastapi import status
 
@@ -202,3 +202,16 @@ def contact(
         ads: Optional[str] = Cookie(default=None)
 ):
     return user_agent
+
+
+@app.post(
+    path="/post-image"
+)
+def post_image(
+        image: UploadFile = File()
+):
+    return {
+        "Filename": image.filename,
+        "Format": image.content_type,
+        "Size(kb)": round(len(image.file.read())/1024, 2)
+    }
