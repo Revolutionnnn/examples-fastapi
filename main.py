@@ -6,6 +6,7 @@ from typing import Optional
 from fastapi import Body, Query, Path, Form, Header, Cookie, UploadFile, File
 from fastapi import FastAPI
 from fastapi import status
+from fastapi import HTTPException
 
 # Pydantic
 from pydantic import BaseModel, Field, IPvAnyAddress, HttpUrl, EmailStr, SecretStr
@@ -137,6 +138,9 @@ def show_person(
 
 #  Validaciones: Path Parameters
 
+persons = [1, 2, 3, 4]
+
+
 @app.get(
     path="/person/detail/{person_id}",
     status_code=status.HTTP_200_OK)
@@ -146,6 +150,11 @@ def show_person(
             example=123
         )
 ):
+    if person_id not in persons:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            detail="This person is not exist"
+        )
     return {person_id: "it exists!"}
 
 
@@ -191,8 +200,8 @@ def contact(
             min_length=1
         ),
         last_name: str = Form(
-        max_length=20,
-        min_length=1
+            max_length=20,
+            min_length=1
         ),
         email: EmailStr = Form(),
         message: str = Form(
@@ -213,5 +222,5 @@ def post_image(
     return {
         "Filename": image.filename,
         "Format": image.content_type,
-        "Size(kb)": round(len(image.file.read())/1024, 2)
+        "Size(kb)": round(len(image.file.read()) / 1024, 2)
     }
