@@ -3,12 +3,12 @@ from enum import Enum
 from typing import Optional
 
 # FastAPO
-from fastapi import Body, Query, Path
+from fastapi import Body, Query, Path, Form
 from fastapi import FastAPI
 from fastapi import status
 
 # Pydantic
-from pydantic import BaseModel, Field, IPvAnyAddress, HttpUrl, EmailStr
+from pydantic import BaseModel, Field, IPvAnyAddress, HttpUrl, EmailStr, SecretStr
 
 app = FastAPI()
 
@@ -86,10 +86,16 @@ class Person(BaseModel):
         }
 
 
+class LoginOut(BaseModel):
+    username: str = Field(..., max_length=20, example='gus')
+    password: str = Field(..., min_length=2, max_length=20, example='123')
+    message: str = Field(default='Login successful :)', description='Description message')
+
+
 @app.get(
     path="/",
     status_code=status.HTTP_200_OK
-    )  # path operation decorator
+)  # path operation decorator
 def home():  # path operation function
     return {"hello": "World"}  # JSON
 
@@ -97,11 +103,11 @@ def home():  # path operation function
 #  Request and Response body
 
 @app.post(
-            path="/person/new",
-          response_model=Person,
-          response_model_exclude={"password"},
-          status_code=status.HTTP_201_CREATED
-          )
+    path="/person/new",
+    response_model=Person,
+    response_model_exclude={"password"},
+    status_code=status.HTTP_201_CREATED
+)
 def create_person(person: Person = Body()):
     return person
 
@@ -161,3 +167,13 @@ def update_person(
     result = person.dict()
     result.update(location.dict())
     return result
+
+
+@app.post(
+    path='/login',
+    response_model=LoginOut,
+    status_code=200,
+    response_model_exclude={'password'},
+)
+def login(username: str = Form(...), password: SecretStr =Form(...)):
+    return LoginOut(username=username, password=password)
