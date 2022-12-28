@@ -95,7 +95,8 @@ class LoginOut(BaseModel):
 
 @app.get(
     path="/",
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
+    tags=["Home"]
 )  # path operation decorator
 def home():  # path operation function
     return {"hello": "World"}  # JSON
@@ -107,7 +108,8 @@ def home():  # path operation function
     path="/person/new",
     response_model=Person,
     response_model_exclude={"password"},
-    status_code=status.HTTP_201_CREATED
+    status_code=status.HTTP_201_CREATED,
+    tags=["Persons"]
 )
 def create_person(person: Person = Body()):
     return person
@@ -117,7 +119,9 @@ def create_person(person: Person = Body()):
 
 @app.get(
     path="/person/detail",
-    status_code=status.HTTP_200_OK)
+    status_code=status.HTTP_200_OK,
+    tags=["Persons"]
+    )
 def show_person(
         name: Optional[str] = Query(
             None,
@@ -143,7 +147,8 @@ persons = [1, 2, 3, 4]
 
 @app.get(
     path="/person/detail/{person_id}",
-    status_code=status.HTTP_200_OK)
+    status_code=status.HTTP_200_OK,
+    tags=["Persons"])
 def show_person(
         person_id: int = Path(
             gt=0,
@@ -162,7 +167,8 @@ def show_person(
 
 @app.put(
     path="/person/{person_id}",
-    status_code=status.HTTP_200_OK)
+    status_code=status.HTTP_200_OK,
+    tags=["Persons"])
 def update_person(
         person_id: int = Path(
             title="Person ID",
@@ -183,6 +189,7 @@ def update_person(
     response_model=LoginOut,
     status_code=200,
     response_model_exclude={'password'},
+    tags=["Login", "Persons"]
 )
 def login(username: str = Form(...), password: SecretStr = Form(...)):
     return LoginOut(username=username, password=password)
@@ -193,6 +200,7 @@ def login(username: str = Form(...), password: SecretStr = Form(...)):
 @app.post(
     path="/contact",
     status_code=status.HTTP_200_OK,
+    tags=["Contacts"]
 )
 def contact(
         first_name: str = Form(
@@ -214,7 +222,8 @@ def contact(
 
 
 @app.post(
-    path="/post-image"
+    path="/post-image",
+    tags=["Image"]
 )
 def post_image(
         image: UploadFile = File()
