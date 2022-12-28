@@ -109,10 +109,40 @@ def home():  # path operation function
     response_model=Person,
     response_model_exclude={"password"},
     status_code=status.HTTP_201_CREATED,
-    tags=["Persons"]
+    tags=["Persons"],
+    summary="Create a person in the app"
 )
 def create_person(person: Person = Body()):
+    """
+    Create a new person in the app and save their information in the database.
+
+    :param person: A person model with the following fields:
+
+        - first_name: str (required, min length: 1, max length: 50)
+        - last_name: str (required, min length: 1, max length: 50)
+        - age: int (required, greater than 0, less than or equal to 150)
+        - hair_color: str (optional, one of "white", "brown", "black", "blonde", "red")
+        - is_married: bool (optional, default: None)
+        - email: str (required, must be a valid email address)
+        - addressIp: str (optional, must be a valid IP address)
+        - website_url: str (optional, must be a valid URL)
+        - password: str (required, min length: 8)
+
+
+    :return: A person model with the following fields:
+
+        - first_name: str
+        - last_name: str
+        - age: int
+        - hair_color: str (one of "white", "brown", "black", "blonde", "red")
+        - is_married: bool
+        - email: str
+        - addressIp: str
+        - website_url: str
+        - password: str (omitted)
+    """
     return person
+
 
 
 #  Validaciones: Querry parameters
@@ -137,6 +167,14 @@ def show_person(
             example=25
         )
 ):
+    """
+    Retrieve information about a person from the database.
+
+    :param name: Optional str (min length: 1, max length: 50). The name of the person to retrieve.
+    :param age: Optional int. The age of the person to retrieve.
+
+    :return: A dictionary with the name and age of the person.
+    """
     return {name: age}
 
 
